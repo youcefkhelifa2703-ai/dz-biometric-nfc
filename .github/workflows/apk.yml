@@ -21,15 +21,17 @@ jobs:
           flutter-version: '3.24.0'
           channel: 'stable'
 
-      - name: Generate Android Files & Preserve Code
+      - name: Generate Clean Android Project & Restore Code
         run: |
-          cp android/app/src/main/AndroidManifest.xml /tmp/AndroidManifest.xml
-          cp lib/main.dart /tmp/main.dart
-          cp pubspec.yaml /tmp/pubspec.yaml
-          flutter create --overwrite --org com.dz.nfc --project-name dz_biometric_nfc .
-          cp /tmp/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
-          cp /tmp/main.dart lib/main.dart
-          cp /tmp/pubspec.yaml pubspec.yaml
+          mkdir -p /tmp/backup
+          cp android/app/src/main/AndroidManifest.xml /tmp/backup/AndroidManifest.xml
+          cp lib/main.dart /tmp/backup/main.dart
+          cp pubspec.yaml /tmp/backup/pubspec.yaml
+          rm -rf android lib pubspec.yaml pubspec.lock
+          flutter create --org com.dz.nfc --project-name dz_biometric_nfc .
+          cp /tmp/backup/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
+          cp /tmp/backup/main.dart lib/main.dart
+          cp /tmp/backup/pubspec.yaml pubspec.yaml
           sed -i 's/flutter.minSdkVersion/24/g' android/app/build.gradle android/app/build.gradle.kts 2>/dev/null || true
 
       - name: Build Release APK
