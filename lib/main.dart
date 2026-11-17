@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:mrz_parser/mrz_parser.dart';
-import 'package:dmrtd/dmrtd.dart';
+import 'package:vcmrtd/vcmrtd.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
@@ -79,17 +79,17 @@ class _IdScannerPageState extends State<IdScannerPage> {
     final provider = NfcProvider();
     try {
       await provider.connect();
-      final mrtd = MrtdApi(provider);
+      final passport = Passport(provider);
       final bacKey = DBAKey(mrz.documentNumber, mrz.birthDate, mrz.expiryDate);
-      await mrtd.initSessionViaBAC(bacKey);
+      await passport.startSession(bacKey);
 
-      final dg1Raw = await mrtd.readDG1();
-      final dg1 = DG1(dg1Raw);
+      final dg1Raw = await passport.readDg1();
+      final dg1 = EfDG1.fromBytes(dg1Raw);
 
       Uint8List? photoBytes;
       try {
-        final dg2Raw = await mrtd.readDG2();
-        final dg2 = DG2(dg2Raw);
+        final dg2Raw = await passport.readDg2();
+        final dg2 = EfDG2.fromBytes(dg2Raw);
         if (dg2.imageData != null) photoBytes = Uint8List.fromList(dg2.imageData!);
       } catch (_) {}
 
