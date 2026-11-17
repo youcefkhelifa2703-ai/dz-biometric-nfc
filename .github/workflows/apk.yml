@@ -23,7 +23,9 @@ jobs:
 
       - name: Generate Android Files
         run: |
-          flutter create --org com.dz.nfc --project-name dz_biometric_nfc .
+          cp android/app/src/main/AndroidManifest.xml /tmp/AndroidManifest.xml
+          flutter create --overwrite --org com.dz.nfc --project-name dz_biometric_nfc .
+          cp /tmp/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
           sed -i 's/flutter.minSdkVersion/24/g' android/app/build.gradle android/app/build.gradle.kts 2>/dev/null || true
 
       - name: Build Release APK
