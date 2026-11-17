@@ -79,17 +79,17 @@ class _IdScannerPageState extends State<IdScannerPage> {
     final provider = NfcProvider();
     try {
       await provider.connect();
-      final passport = Passport(provider);
+      final mrtd = MrtdApi(provider);
       final bacKey = DBAKey(mrz.documentNumber, mrz.birthDate, mrz.expiryDate);
-      await passport.startSession(bacKey);
+      await mrtd.initSessionViaBAC(bacKey);
 
-      final dg1Raw = await passport.readDg1();
-      final dg1 = EfDG1.fromBytes(dg1Raw);
+      final dg1Raw = await mrtd.readDG1();
+      final dg1 = DG1(dg1Raw);
 
       Uint8List? photoBytes;
       try {
-        final dg2Raw = await passport.readDg2();
-        final dg2 = EfDG2.fromBytes(dg2Raw);
+        final dg2Raw = await mrtd.readDG2();
+        final dg2 = DG2(dg2Raw);
         if (dg2.imageData != null) photoBytes = Uint8List.fromList(dg2.imageData!);
       } catch (_) {}
 
